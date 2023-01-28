@@ -15,7 +15,22 @@ const server = http.createServer(app);
 const io = SocketIO(server);
 
 io.on("connection", (socket) => {
-  socket.on("room", (msg) => console.log(msg));
+  socket.onAny((event) => console.log(`Socket Event : ${event}`)); // 미들웨어
+  socket.on("enter_room", (roomName, done) => {
+    console.log(socket.rooms);
+    socket.join(roomName);
+    done();
+    socket.to(roomName).emit("welcome");
+  });
+
+  socket.on("disconnecting", () => {
+    console.log(socket.rooms);
+    socket.rooms.forEach((room) => socket.to(room).emit("bye"));
+  });
+  socket.on("new_message", (msg, room, done) => {
+    socket.to(room).emit("new_message", msg);
+    done();
+  });
 });
 
 // const wss = new WebSocket.Server({ server });
