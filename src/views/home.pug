@@ -11,13 +11,17 @@ html(lang="en")
             h1 Noom
         main
         div#welcome
-            form
+            form#name
+                input(placeholder="nickname", required, type="text")
+                button SEND
+            form#enterRoom
                 input(placeholder="room name", required, type="text")
                 button ENTER
+            
         div#room
             h3
             ul
-            form
+            form#msg
                 input(placeholder="message", required, type="text")
                 button SEND
             //- form#nick
