@@ -20,6 +20,9 @@ const publicRooms = () => {
       adapter: { sids, rooms },
     },
   } = io;
+  // const sids = io.sockets.adapter.sids;
+  // const rooms = io.sockets.adapter.rooms;
+
   const publicRooms = [];
   rooms.forEach((_, key) => {
     if (sids.get(key) === undefined) {
@@ -37,6 +40,7 @@ io.on("connection", (socket) => {
     socket.join(roomName);
     done();
     socket.to(roomName).emit("welcome", socket.nickname);
+    io.sockets.emit("room_change", publicRooms());
   });
 
   socket.on("disconnecting", () => {
@@ -44,6 +48,9 @@ io.on("connection", (socket) => {
     socket.rooms.forEach((room) =>
       socket.to(room).emit("bye", socket.nickname)
     );
+  });
+  socket.on("disconnect", () => {
+    io.sockets.emit("room_change", publicRooms()); 
   });
   socket.on("new_message", (msg, room, done) => {
     socket.to(room).emit("new_message", `${socket.nickname} : ${msg}`);
