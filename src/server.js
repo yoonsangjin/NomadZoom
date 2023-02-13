@@ -57,6 +57,9 @@ io.on("connection", (socket) => {
     socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     io.sockets.emit("room_change", publicRooms());
   });
+  socket.on("offer", (offer, roomName) => {
+    socket.to(roomName).emit("offer", offer);
+  });
 
   socket.on("disconnecting", () => {
     console.log(socket.rooms);
