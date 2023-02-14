@@ -50,15 +50,21 @@ function countRoom(roomName) {
 io.on("connection", (socket) => {
   socket.onAny((event) => console.log(`Socket Event : ${event}`)); // 미들웨어
   socket.on("nickname", (nickname) => (socket["nickname"] = nickname));
-  socket.on("enter_room", (roomName, done) => {
+  socket.on("enter_room", (roomName) => {
     console.log(socket.rooms);
     socket.join(roomName);
-    done();
     socket.to(roomName).emit("welcome", socket.nickname, countRoom(roomName));
     io.sockets.emit("room_change", publicRooms());
   });
   socket.on("offer", (offer, roomName) => {
     socket.to(roomName).emit("offer", offer);
+  });
+  socket.on("answer", (answer, roomName) => {
+    socket.to(roomName).emit("answer", answer);
+  });
+
+  socket.on("ice", (ice, roomName) => {
+    socket.to(roomName).emit("ice", ice);
   });
 
   socket.on("disconnecting", () => {
